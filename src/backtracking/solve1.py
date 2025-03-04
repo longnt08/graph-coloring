@@ -50,7 +50,7 @@ def to_mau_do_thi_backtracking(graph):
             execution_time = end_time - start_time
             return colors, m, execution_time
         m += 1
-# Chạy thuật toán
+# Chạy thuật toán với 20 đỉnh 
 graph = tao_do_thi_lien_thong(20, edge_prob=0.1)
 graph_coloring, num_colors, exec_time = to_mau_do_thi_backtracking(graph)
 # In kết quả của thuật toán sau khi chạy xong
