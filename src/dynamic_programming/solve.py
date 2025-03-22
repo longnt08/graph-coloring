@@ -1,30 +1,22 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
+# giai thuat quy hoach dong
 def solve(adj_matrix, n):
-    color = [0] * (n + 1)  # 1-based index
-    flag = [0] * ((n + 1) * (n + 1))  # 1-based index
-    
-    # Gan dinh dau tien mau 1
-    color[1] = 1
+    colors = [1] * (n + 1)  
     
     for i in range(1, n + 1):
         for j in range(1, n + 1):
-            if i == j or flag[i * (n + 1) + j]:
+            if i == j:
                 continue
             
             # Neu hai dinh ke nhau
-            if adj_matrix[i * (n + 1) + j] and not flag[i * (n + 1) + j]:
-                color[j] = color[i] + 1
-                flag[i * (n + 1) + j] = flag[j * (n + 1) + i] = 1
-            
-            # Neu hai dinh khong ke nhau
-            if not adj_matrix[i * (n + 1) + j] and not flag[i * (n + 1) + j]:
-                color[j] = color[i]
-                flag[i * (n + 1) + j] = flag[j * (n + 1) + i] = 1
+            if ((i+j)%2 != 0 and (i+j+adj_matrix[i * (n + 1) + j])%2 == 0) or ((i+j)%2 == 0 and (i+j+adj_matrix[i * (n+1) + j])%2 != 0):
+                colors[j] = colors[i] + 1 if colors[j] == colors[i] else colors[j]
     
-    return color
+    return colors
 
+# tao ma tran ke
 def input_matrix(n):
     adj_matrix = [0] * ((n + 1) * (n + 1))  # 1-based index
     print("\nNhap ma tran lien ke:")
@@ -34,11 +26,24 @@ def input_matrix(n):
             adj_matrix[i * (n + 1) + j] = row[j - 1]
     return adj_matrix
 
+# tao danh sach ke
+def create_adjacency_list(adj_matrix, n):
+    adjacency_list = []
+    for i in range(1, n+1):
+        neighbors = []
+        for j in range(1, n+1):
+            if(adj_matrix[i * (n+1) + j]):
+                neighbors.append(str(j))
+        neighbors_str = ", ".join(neighbors) if neighbors else "None"
+        adjacency_list.append(f"'{i}': [{neighbors_str}]")
+
+    return adjacency_list
+
 def draw_graph(adj_matrix, n, colors):
     G = nx.Graph()
     
     for i in range(1, n + 1):
-        G.add_node(i, color=colors[i])
+        G.add_node(i, colors=colors[i])
         for j in range(1, n + 1):
             if adj_matrix[i * (n + 1) + j]:
                 G.add_edge(i, j)
@@ -49,15 +54,23 @@ def draw_graph(adj_matrix, n, colors):
     plt.show()
 
 def main():
-    vertices = int(input("\nNhap so dinh: "))
+    vertices = int(input("\nNhập số đỉnh: "))
     adj_matrix = input_matrix(vertices)
+
+    adj_list = create_adjacency_list(adj_matrix, vertices)
+    print("Danh sách đỉnh kề: \n")
+    for line in adj_list:
+        print(f" {line},")
     
-    res_color = solve(adj_matrix, vertices)
+    res_colors = solve(adj_matrix, vertices)
     
-    print("\nMau cua cac dinh:")
-    print(" ".join(map(str, res_color[1:])))  # Bo qua index 0 do chi su dung 1-based indexing
+    print("\nMàu của các đỉnh:")
+    print(" ".join(map(str, res_colors[1:]))) 
     
-    draw_graph(adj_matrix, vertices, res_color)
+    draw_graph(adj_matrix, vertices, res_colors)
 
 if __name__ == "__main__":
     main()
+
+
+# in danh sach cac dinh
