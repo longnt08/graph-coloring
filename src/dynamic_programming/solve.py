@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from generate_graph import generate_adjacency_matrix
 
 # giai thuat quy hoach dong
 def solve(adj_matrix, n):
@@ -11,7 +12,7 @@ def solve(adj_matrix, n):
                 continue
             
             # Neu hai dinh ke nhau
-            if ((i+j)%2 != 0 and (i+j+adj_matrix[i * (n + 1) + j])%2 == 0) or ((i+j)%2 == 0 and (i+j+adj_matrix[i * (n+1) + j])%2 != 0):
+            if(adj_matrix[i][j]):
                 colors[j] = colors[i] + 1 if colors[j] == colors[i] else colors[j]
     
     return colors
@@ -23,7 +24,7 @@ def input_matrix(n):
     for i in range(1, n + 1):
         row = list(map(int, input().split()))
         for j in range(1, n + 1):
-            adj_matrix[i * (n + 1) + j] = row[j - 1]
+            adj_matrix[i][j] = row[j - 1]
     return adj_matrix
 
 # tao danh sach ke
@@ -32,7 +33,7 @@ def create_adjacency_list(adj_matrix, n):
     for i in range(1, n+1):
         neighbors = []
         for j in range(1, n+1):
-            if(adj_matrix[i * (n+1) + j]):
+            if(adj_matrix[i][j]):
                 neighbors.append(str(j))
         neighbors_str = ", ".join(neighbors) if neighbors else "None"
         adjacency_list.append(f"'{i}': [{neighbors_str}]")
@@ -45,7 +46,7 @@ def draw_graph(adj_matrix, n, colors):
     for i in range(1, n + 1):
         G.add_node(i, colors=colors[i])
         for j in range(1, n + 1):
-            if adj_matrix[i * (n + 1) + j]:
+            if adj_matrix[i][j]:
                 G.add_edge(i, j)
     
     node_colors = [colors[node] for node in G.nodes()]
@@ -55,7 +56,9 @@ def draw_graph(adj_matrix, n, colors):
 
 def main():
     vertices = int(input("\nNhập số đỉnh: "))
-    adj_matrix = input_matrix(vertices)
+    # adj_matrix = input_matrix(vertices)
+
+    adj_matrix = generate_adjacency_matrix(vertices)
 
     adj_list = create_adjacency_list(adj_matrix, vertices)
     print("Danh sách đỉnh kề: \n")
@@ -63,6 +66,9 @@ def main():
         print(f" {line},")
     
     res_colors = solve(adj_matrix, vertices)
+
+    min_color = max(res_colors)
+    print(f"\nsố màu ít nhất: {min_color}")
     
     print("\nMàu của các đỉnh:")
     print(" ".join(map(str, res_colors[1:]))) 
@@ -71,6 +77,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# in danh sach cac dinh
